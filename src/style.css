@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Space+Grotesk:wght@400;600;700&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Space Grotesk', sans-serif;
+  --font-heading: 'Chakra Petch', sans-serif;
+}
+
+body {
+  background-color: #0c0c0a;
+  color: #f4ede2;
+  font-family: 'Space Grotesk', sans-serif;
+  overflow-x: hidden;
+}
+
+.smooth-interaction {
+  transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
