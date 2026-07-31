@@ -4,18 +4,21 @@ import { marked } from 'marked'
 import { gsap } from 'gsap'
 import { useOrion } from './composables/useOrion.js'
 import UserManagementModal from './components/UserManagementModal.vue'
+import DocumentManagementModal from './components/DocumentManagementModal.vue'
 
 const {
   isLoggedIn, email, password, authError, authLoading, currentUser,
   messages, inputMessage, isTyping,
   currentTime, formattedUptime, systemMetrics,
   isDragOver, uploadStatus, uploadFileName, systemLogs,
+  targetDivisi, uploadFile,
   initSystem, destroySystem,
   handleLogin, handleLogout, sendMessage,
   handleDragOver, handleDragLeave, handleDrop, handleFileInput
 } = useOrion()
 
 const showUserManagement = ref(false)
+const showDocModal = ref(false)
 
 const handleBackgroundParallax = (e) => {
   const bg = document.querySelector('.login-bg-illustration')
@@ -581,6 +584,17 @@ onUnmounted(() => { destroySystem() })
           // BIO_DATABASE_INGEST
         </p>
 
+        <div class="mb-3">
+          <label class="block text-[8px] font-display font-black uppercase tracking-[0.2em] text-[#ffffff] mb-1">Target Divisi (RBAC)</label>
+          <select v-model="targetDivisi" class="w-full bg-[#080605] border border-[#4d3725] px-3 py-2 rounded text-[10px] text-[#f0a929] focus:outline-none focus:border-[#f0a929] font-mono appearance-none uppercase">
+            <option value="universal">UNIVERSAL (SEMUA)</option>
+            <option value="teknisi">TEKNISI LAPANGAN</option>
+            <option value="cs">CUSTOMER SERVICE</option>
+            <option value="hr">HR & MANAGEMENT</option>
+          </select>
+        </div>
+
+
         <!-- CSS 3D planter box container -->
         <div class="planter-box h-28 flex flex-col items-center justify-center p-4 relative overflow-hidden"
           :class="{ 'drag-active': isDragOver }"
@@ -620,30 +634,38 @@ onUnmounted(() => { destroySystem() })
             » {{ uploadFileName }}
           </p>
         </div>
+
+      <button @click="showDocModal = true" 
+    class="mt-3 w-full border border-[#f0a929]/50 text-[#f0a929] hover:bg-[#f0a929] hover:text-[#1a140f] py-2 rounded text-[8px] font-mono font-bold tracking-widest uppercase transition-all">
+    [ VIEW CHROMADB DIRECTORY ]
+  </button>
+
       </div>
 
       <!-- Recessed CRT System Logs -->
       <div class="flex-1 solarpunk-side-chassis rounded-3xl p-5 flex flex-col relative overflow-hidden">
-        <!-- Corner Rivets -->
-        <span class="absolute top-2 left-2 w-2 h-2 rounded-full bg-[#4a3424] opacity-40 shadow-inner"></span>
-        <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#4a3424] opacity-40 shadow-inner"></span>
-        
-        <p class="text-[8px] text-[#f0a929] font-display font-black tracking-[0.3em] uppercase mb-3">
-          // SYS_TELEMETRY_LOG
-        </p>
-        
-        <div class="recessed-slot-crt flex-1 p-4 crt-reflection">
-          <div class="absolute inset-0 overflow-y-auto p-4 space-y-3.5 industrial-scroll">
-            <div v-for="(log, li) in systemLogs" :key="li"
-              class="border-b border-[#ffffff]/3 pb-2 last:border-0 crt-glow text-[#f0a929]/80 font-mono text-[8px] leading-normal">
-              <div class="flex gap-2">
-                <span class="text-[#cca37a]/50 shrink-0">[{{ log.t }}]</span>
-                <span class="break-all">{{ log.msg }}</span>
-              </div>
-            </div>
-          </div>
+  <!-- Corner Rivets -->
+  <span class="absolute top-2 left-2 w-2 h-2 rounded-full bg-[#4a3424] opacity-40 shadow-inner"></span>
+  <span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#4a3424] opacity-40 shadow-inner"></span>
+  
+  <p class="text-[8px] text-[#f0a929] font-display font-black tracking-[0.3em] uppercase mb-3">
+    // SYS_TELEMETRY_LOG
+  </p>
+
+  <!-- Layar Gelap Bersih tanpa efek CRT buram -->
+  <div class="flex-1 bg-[#130f0c] rounded-xl border-2 border-[#4a3424] shadow-[inset_0_0_15px_rgba(0,0,0,0.8)] relative overflow-hidden">
+    <div class="absolute inset-0 overflow-y-auto p-4 space-y-2.5 industrial-scroll font-mono text-[9px]">
+      <div v-for="(log, li) in systemLogs" :key="li"
+        class="border-b border-[#4a3424]/40 pb-2 last:border-0 leading-normal">
+        <div class="flex gap-2">
+          <!-- Waktu warna orange, pesan warna putih krem biar kontras -->
+          <span class="text-[#e05320] font-bold shrink-0">[{{ log.t }}]</span>
+          <span class="text-[#f4ede2] break-all tracking-wide">{{ log.msg }}</span>
         </div>
       </div>
+    </div>
+  </div>
+</div>
 
       <!-- Footer compartment info -->
       <div class="solarpunk-side-chassis rounded-2xl py-3 px-4 text-center">
@@ -657,6 +679,7 @@ onUnmounted(() => { destroySystem() })
       v-if="showUserManagement" 
       @close="showUserManagement = false" 
     />
+    <DocumentManagementModal v-if="showDocModal && currentUser?.role === 'admin'" @close="showDocModal = false" />
   </div>
 </template>
 

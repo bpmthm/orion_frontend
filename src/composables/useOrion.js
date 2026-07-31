@@ -30,6 +30,7 @@ export function useOrion() {
   const isDragOver = ref(false)
   const uploadStatus = ref('IDLE')
   const uploadFileName = ref('')
+  const targetDivisi = ref('universal') // Tambahin variabel ini di area state useOrion
 
   // ── System Logs ──
   const systemLogs = ref([
@@ -240,20 +241,29 @@ export function useOrion() {
   }
 
   const uploadFile = async (file) => {
-    uploadStatus.value = 'TRANSMITTING...'
-    uploadFileName.value = file.name
-    const formData = new FormData()
-    formData.append('file', file)
-    try {
-      const res = await axios.post('http://localhost:8000/upload', formData)
-      uploadStatus.value = `INDEXED: ${res.data.total_chunks_added} CHUNKS`
-      systemMetrics.value.vectorCount += res.data.total_chunks_added
-      addLog(`INGEST: "${file.name}" → ${res.data.total_chunks_added} vectors`)
-    } catch (err) {
-      uploadStatus.value = 'INGEST_FAIL'
-      addLog(`ERR: INGEST FAILED — ${file.name}`)
-    }
+  uploadStatus.value = 'TRANSMITTING...'
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('divisi', targetDivisi.value)
+
+  try {
+    const token = localStorage.getItem('orion_token') // 🟢 Ambil JWT Token
+    const res = await axios.post('http://localhost:8000/upload', formData, {
+      headers: {
+        'Authorization': `Bearer ${token}`, // 🟢 Sisipkan Token Header
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    uploadStatus.value = `INDEXED: ${res.data.total_chunks_added} CHUNKS`
+    addLog(`INGEST: "${file.name}" [${targetDivisi.value.toUpperCase()}] → ${res.data.total_chunks_added} chunks`)
+  } catch (err) {
+    uploadStatus.value = 'INGEST_FAIL'
+    addLog(`ERR: INGEST FAILED — ${file.name}`)
+    console.error("Ingestion Failed:", err)
   }
+  }
+
+
 
   // ── Logs ──
   const addLog = (msg) => {
@@ -266,6 +276,7 @@ export function useOrion() {
     messages, inputMessage, isTyping,
     currentTime, uptimeSeconds, formattedUptime, systemMetrics,
     isDragOver, uploadStatus, uploadFileName, systemLogs,
+    targetDivisi,
     initSystem, destroySystem,
     handleLogin, handleLogout, sendMessage,
     handleDragOver, handleDragLeave, handleDrop, handleFileInput
