@@ -55,9 +55,13 @@ export function useOrion() {
     if (savedToken) {
       isLoggedIn.value = true
       if (savedUser) currentUser.value = JSON.parse(savedUser)
-      triggerDashboardIntro()
+      setTimeout(() => {
+        triggerDashboardIntro()
+      }, 100)
     } else {
-      triggerLoginIntro()
+      setTimeout(() => {
+        triggerLoginIntro()
+      }, 100)
     }
 
     clockInterval = setInterval(() => {
@@ -83,20 +87,20 @@ export function useOrion() {
     tl.to('.shutter-top', { y: '-100%', duration: 0.6, ease: 'power4.inOut' })
       .to('.shutter-bottom', { y: '100%', duration: 0.6, ease: 'power4.inOut' }, '<')
       .from('#login-view', { opacity: 0, duration: 0.4 }, '<')
-      .from('.login-left', { x: -60, opacity: 0, duration: 0.8, ease: 'power4.out' }, '-=0.3')
-      .from('.login-right', { x: 60, opacity: 0, duration: 0.8, ease: 'power4.out' }, '<')
+      .from('.login-left', { x: -60, opacity: 0, duration: 0.8, ease: 'power4.out', clearProps: 'all' }, '-=0.3')
+      .from('.login-right', { x: 60, opacity: 0, duration: 0.8, ease: 'power4.out', clearProps: 'all' }, '<')
   }
 
   const triggerDashboardIntro = () => {
     const tl = gsap.timeline()
     tl.to('.shutter-top', { y: '-100%', duration: 0.6, ease: 'power4.inOut' })
       .to('.shutter-bottom', { y: '100%', duration: 0.6, ease: 'power4.inOut' }, '<')
-      .from('.panel-left', { x: -80, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.4')
-      .from('.panel-right', { x: 80, opacity: 0, duration: 0.8, ease: 'power3.out' }, '<')
-      .from('.panel-center', { scale: 0.96, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
-      .from('.panel-left > *', { opacity: 0, y: 15, duration: 0.4, stagger: 0.08, ease: 'power2.out' }, '-=0.4')
-      .from('.panel-right > *', { opacity: 0, y: 15, duration: 0.4, stagger: 0.08, ease: 'power2.out' }, '<')
-      .from('.panel-center > *', { opacity: 0, y: 15, duration: 0.5, stagger: 0.1, ease: 'power2.out' }, '-=0.3')
+      .from('.panel-left', { x: -80, opacity: 0, duration: 0.8, ease: 'power3.out', clearProps: 'all' }, '-=0.4')
+      .from('.panel-right', { x: 80, opacity: 0, duration: 0.8, ease: 'power3.out', clearProps: 'all' }, '<')
+      .from('.panel-center', { scale: 0.96, opacity: 0, duration: 0.8, ease: 'power3.out', clearProps: 'all' }, '-=0.6')
+      .from('.panel-left > *', { opacity: 0, y: 15, duration: 0.4, stagger: 0.08, ease: 'power2.out', clearProps: 'all' }, '-=0.4')
+      .from('.panel-right > *', { opacity: 0, y: 15, duration: 0.4, stagger: 0.08, ease: 'power2.out', clearProps: 'all' }, '<')
+      .from('.panel-center > *', { opacity: 0, y: 15, duration: 0.5, stagger: 0.1, ease: 'power2.out', clearProps: 'all' }, '-=0.3')
   }
 
   // ── Auth ──
@@ -118,9 +122,9 @@ export function useOrion() {
         const tl = gsap.timeline({
           onComplete: () => {
             isLoggedIn.value = true
-            nextTick(() => {
+            setTimeout(() => {
               triggerDashboardIntro()
-            })
+            }, 100)
           }
         })
         tl.to('.shutter-top', { y: '0%', duration: 0.5, ease: 'power4.inOut' })
@@ -142,9 +146,9 @@ export function useOrion() {
         localStorage.removeItem('orion_user')
         currentUser.value = null
         isLoggedIn.value = false
-        nextTick(() => {
+        setTimeout(() => {
           triggerLoginIntro()
-        })
+        }, 100)
       }
     })
     tl.to('.shutter-top', { y: '0%', duration: 0.5, ease: 'power4.inOut' })
@@ -167,7 +171,7 @@ export function useOrion() {
     try {
       const token = localStorage.getItem('orion_token')
       const uid = currentUser.value?.id || 1
-      const response = await axios.post('http://localhost:8084/chat/send', {
+      const response = await axios.post('http://localhost:8084/api/chat/send', {
         user_id: uid, question: userQuery
       }, {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
@@ -192,7 +196,7 @@ export function useOrion() {
           }
         }, 16)
 
-        addLog(`RESP_RX: ${fullText.length} chars, ${(response.data.citations||[]).length} citations`)
+        addLog(`RESP_RX: ${fullText.length} chars, ${(response.data.citations || []).length} citations`)
       }
     } catch (error) {
       console.error('Connection failed:', error)

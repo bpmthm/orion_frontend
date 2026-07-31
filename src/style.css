@@ -1,22 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Inter:wght@200;300;400;500&family=JetBrains+Mono:wght@300;400;600&display=swap');
 
 @import "tailwindcss";
 
 @theme {
+  --font-display: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
-  --font-sans: 'JetBrains Mono', monospace;
 }
 
 /* ═══════════════════════════════════════════════════
-   BASE LAYER — INDUSTRIAL DARK FOUNDATION
+   BASE LAYER — SOLAR PUNK INDUSTRIAL FOUNDATION
    ═══════════════════════════════════════════════════ */
 
 *, *::before, *::after {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 2v7m0 6v7M2 12h7m6 0h7" stroke="%23e05320" stroke-width="1.5" stroke-linecap="square"/><rect x="11" y="11" width="2" height="2" fill="%23ffb800"/></svg>') 12 12, crosshair !important;
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><defs><radialGradient id="gold" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="%23fff5cc"/><stop offset="30%" stop-color="%23f0a929"/><stop offset="70%" stop-color="%23c58314"/><stop offset="100%" stop-color="%23805203"/></radialGradient><filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="1" dy="1" stdDeviation="1" flood-opacity="0.5"/></filter></defs><circle cx="16" cy="16" r="10" stroke="url(%23gold)" stroke-width="3" fill="none" filter="url(%23shadow)"/><circle cx="16" cy="16" r="8" stroke="%2350341b" stroke-width="0.5" fill="none"/><path d="M16 2v6M16 24v6M2 16h6M24 16h6" stroke="url(%23gold)" stroke-width="2" stroke-linecap="round" filter="url(%23shadow)"/><circle cx="16" cy="16" r="3" fill="%23e05320" filter="url(%23shadow)"/><circle cx="15" cy="15" r="1" fill="%23fff"/></svg>') 16 16, crosshair !important;
 }
 
 a, a *, button, button *, label, select, [role="button"] {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path d="M16 2v10m0 8v10M2 16h10m8 0h10" stroke="%23ffb800" stroke-width="2" stroke-linecap="square"/><rect x="14" y="14" width="4" height="4" fill="%23e05320"/></svg>') 16 16, pointer !important;
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><defs><radialGradient id="amber" cx="30%" cy="30%" r="70%"><stop offset="0%" stop-color="%23ffebcc"/><stop offset="30%" stop-color="%23e05320"/><stop offset="70%" stop-color="%23b33605"/><stop offset="100%" stop-color="%23661c00"/></radialGradient><filter id="shadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="1.5" dy="1.5" stdDeviation="1" flood-opacity="0.6"/></filter></defs><circle cx="20" cy="20" r="14" stroke="url(%23amber)" stroke-width="4" fill="none" filter="url(%23shadow)"/><circle cx="20" cy="20" r="11" stroke="%233d1400" stroke-width="0.5" fill="none"/><circle cx="20" cy="9" r="1.5" fill="%23f0a929"/><circle cx="20" cy="31" r="1.5" fill="%23f0a929"/><circle cx="9" cy="20" r="1.5" fill="%23f0a929"/><circle cx="31" cy="20" r="1.5" fill="%23f0a929"/><path d="M20 2v5M20 33v5M2 20h5M33 20h5" stroke="url(%23amber)" stroke-width="2" stroke-linecap="round" filter="url(%23shadow)"/><circle cx="20" cy="20" r="4" fill="url(%23amber)" filter="url(%23shadow)"/><circle cx="18" cy="18" r="1" fill="%23fff"/></svg>') 20 20, pointer !important;
 }
 
 input, textarea {
@@ -24,9 +25,11 @@ input, textarea {
 }
 
 html, body {
-  background-color: #050505;
-  color: #8e8a82;
-  font-family: 'JetBrains Mono', monospace;
+  background-color: #1a140f;
+  background-image: radial-gradient(rgba(240, 169, 41, 0.02) 2px, transparent 0);
+  background-size: 24px 24px;
+  color: #554433;
+  font-family: 'Inter', sans-serif;
   overflow: hidden;
   height: 100vh;
   margin: 0;
@@ -34,81 +37,196 @@ html, body {
 }
 
 ::selection {
-  background: #e05320;
-  color: #050505;
+  background: #f0a929;
+  color: #1a140f;
 }
 
 /* ═══════════════════════════════════════════════════
-   TECH GRID OVERLAY — PERSISTENT BACKGROUND TEXTURE
+   SKEUOMORPHIC 3D COMPONENTS
    ═══════════════════════════════════════════════════ */
 
-.tech-grid {
-  background-image:
-    linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
-  background-size: 32px 32px;
-}
-
-.tech-grid-dense {
-  background-image:
-    linear-gradient(rgba(224,83,32,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(224,83,32,0.04) 1px, transparent 1px);
-  background-size: 12px 12px;
-}
-
-/* ═══════════════════════════════════════════════════
-   CYBER PANEL — L-SHAPED CORNER ACCENTS
-   ═══════════════════════════════════════════════════ */
-
-.cyber-panel {
+/* Pelat Sasis Utama Tembaga/Perunggu */
+.solarpunk-chassis {
+  background: linear-gradient(135deg, #a4815e 0%, #d8b792 30%, #be9e7a 60%, #87623c 100%);
+  border: 4px solid;
+  border-color: #ffdcb5 #694a2f #573b22 #f2d2b0;
+  box-shadow: 
+    0 15px 35px rgba(28,21,14,0.45), 
+    inset 0 1px 2px rgba(255,255,255,0.4);
   position: relative;
-  border: 1px solid rgba(224, 83, 32, 0.12);
-  background: rgba(5, 5, 5, 0.85);
 }
 
-.cyber-panel::before {
-  content: '';
-  position: absolute;
-  top: -1px;
-  left: -1px;
-  width: 14px;
-  height: 14px;
-  border-top: 2px solid #e05320;
-  border-left: 2px solid #e05320;
-  pointer-events: none;
-  z-index: 2;
+/* Panel Samping Terbuka */
+.solarpunk-side-chassis {
+  background: linear-gradient(180deg, #93714e 0%, #7e5c3b 100%);
+  border: 3px solid;
+  border-color: #e5c3a0 #543b23 #452e18 #ccaa88;
+  box-shadow: 
+    0 10px 25px rgba(28,21,14,0.35), 
+    inset 0 1px 1px rgba(255,255,255,0.3);
 }
 
-.cyber-panel::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  right: -1px;
-  width: 14px;
-  height: 14px;
-  border-bottom: 2px solid #e05320;
-  border-right: 2px solid #e05320;
-  pointer-events: none;
-  z-index: 2;
+/* Coakan Bidang Kertas Perkamen (Ambles) - Glassmorphism Edition */
+.recessed-slot-paper {
+  background-color: rgba(252, 250, 245, 0.42);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background-image: 
+    radial-gradient(rgba(0,0,0,0.015) 1px, transparent 0),
+    linear-gradient(rgba(141,107,72,0.03) 1px, transparent 1px);
+  background-size: 24px 24px, 100% 24px;
+  border: 3px solid rgba(74, 52, 36, 0.85);
+  box-shadow: 
+    inset 4px 4px 8px rgba(0,0,0,0.35), 
+    inset -1px -1px 3px rgba(255,255,255,0.25),
+    0 8px 32px rgba(26, 20, 15, 0.15);
+  border-radius: 14px;
 }
 
-.cyber-panel-amber::before {
-  border-color: #ffb800;
+/* Coakan Layar CRT Elektronik (Ambles) */
+.recessed-slot-crt {
+  background-color: #0c0c0a;
+  border: 3px solid #4a3424;
+  box-shadow: 
+    inset 5px 5px 12px rgba(0,0,0,0.85), 
+    inset -1px -1px 3px rgba(255,255,255,0.1);
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
 }
-.cyber-panel-amber::after {
-  border-color: #ffb800;
-}
-
-.cyber-panel-muted::before {
-  border-color: #27272a;
-}
-.cyber-panel-muted::after {
-  border-color: #27272a;
-}
-
 
 /* ═══════════════════════════════════════════════════
-   TERMINAL CARET — BLINKING BLOCK CURSOR
+   CRT SCANLINE & PHOSPHOR EFFECTS
+   ═══════════════════════════════════════════════════ */
+
+.recessed-slot-crt::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: 
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%), 
+    linear-gradient(90deg, rgba(240, 169, 41, 0.03), rgba(0, 255, 0, 0.01), rgba(224, 83, 32, 0.03));
+  background-size: 100% 3px, 3px 100%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.crt-glow {
+  text-shadow: 0 0 4px currentColor, 0 0 10px currentColor;
+}
+
+/* Layar CRT cembung pembias cahaya */
+.crt-reflection {
+  background: radial-gradient(circle at 50% 15%, rgba(255,255,255,0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════
+   VEGETATION SYSTEM (PLANTS)
+   ═══════════════════════════════════════════════════ */
+
+/* Kotak Planter (Tanaman) */
+.planter-box {
+  background: linear-gradient(180deg, #3a271a 0%, #1e120a 100%);
+  border: 3px solid #4d3725;
+  box-shadow: 
+    inset 2px 2px 5px rgba(0,0,0,0.8),
+    0 2px 4px rgba(255,255,255,0.1);
+  border-radius: 8px;
+  position: relative;
+}
+
+.leaf-sway {
+  animation: wind-sway 4s ease-in-out infinite alternate;
+  transform-origin: bottom center;
+}
+
+@keyframes wind-sway {
+  0% { transform: rotate(-2deg) skewX(-1deg); }
+  100% { transform: rotate(3deg) skewX(2deg); }
+}
+
+/* ═══════════════════════════════════════════════════
+   TACTILE CONTROL COMPONENTS
+   ═══════════════════════════════════════════════════ */
+
+/* Tombol Cetak Timbul */
+.tactile-btn {
+  background: linear-gradient(180deg, #da9f57 0%, #b27a3c 100%);
+  border: 2px solid;
+  border-color: #fde4c5 #7e5527 #67421a #eecfa4;
+  box-shadow: 
+    0 5px 8px rgba(0,0,0,0.35), 
+    inset 0 1px 1px rgba(255,255,255,0.4);
+  transition: all 0.1s ease;
+  border-radius: 10px;
+  text-shadow: 0 -1px 0 rgba(0,0,0,0.4);
+  color: #1a140f;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+}
+
+.tactile-btn:hover {
+  background: linear-gradient(180deg, #f2af69 0%, #c48a47 100%);
+  box-shadow: 
+    0 6px 12px rgba(0,0,0,0.4), 
+    inset 0 1px 1px rgba(255,255,255,0.5);
+}
+
+.tactile-btn:active {
+  transform: translateY(2.5px);
+  box-shadow: 
+    0 1px 2px rgba(0,0,0,0.35), 
+    inset 0 1px 1px rgba(0,0,0,0.2);
+}
+
+.tactile-btn-red {
+  background: linear-gradient(180deg, #ec6b51 0%, #bd3f26 100%);
+  border-color: #fcc3b6 #822210 #691709 #f2a798;
+}
+.tactile-btn-red:hover {
+  background: linear-gradient(180deg, #ff7e64 0%, #ce492f 100%);
+}
+
+/* Lampu Bulb Cathode */
+.bulb {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  position: relative;
+}
+
+.bulb-amber {
+  background: radial-gradient(circle at 35% 35%, #ffd480 0%, #e05320 70%, #802705 100%);
+  box-shadow: 
+    0 0 10px #e05320, 
+    0 0 20px #e05320,
+    inset 0 1px 1px rgba(255,255,255,0.6);
+}
+
+.bulb-gold {
+  background: radial-gradient(circle at 35% 35%, #fff280 0%, #f0a929 70%, #8c5a08 100%);
+  box-shadow: 
+    0 0 10px #f0a929, 
+    0 0 20px #f0a929,
+    inset 0 1px 1px rgba(255,255,255,0.6);
+}
+
+.bulb-green {
+  background: radial-gradient(circle at 35% 35%, #a6ff80 0%, #22c55e 70%, #0d5e2a 100%);
+  box-shadow: 
+    0 0 10px #22c55e, 
+    inset 0 1px 1px rgba(255,255,255,0.6);
+}
+
+.bulb-off {
+  background: radial-gradient(circle at 35% 35%, #5e5245 0%, #3e3227 75%, #1f1811 100%);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
+}
+
+/* ═══════════════════════════════════════════════════
+   TERMINAL CARET & SCROLLBAR
    ═══════════════════════════════════════════════════ */
 
 @keyframes blink-caret {
@@ -118,114 +236,336 @@ html, body {
 
 .terminal-caret {
   animation: blink-caret 0.8s step-end infinite;
-  color: #e05320;
+  color: #f0a929;
   font-weight: 800;
 }
 
-/* ═══════════════════════════════════════════════════
-   SCANLINE — SUBTLE CRT EFFECT
-   ═══════════════════════════════════════════════════ */
-
-@keyframes scanline-drift {
-  0% { top: -10%; }
-  100% { top: 110%; }
-}
-
-.scanline-overlay::before {
-  content: '';
-  position: absolute;
-  top: -10%;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    rgba(224, 83, 32, 0.03),
-    transparent
-  );
-  animation: scanline-drift 8s linear infinite;
-  pointer-events: none;
-  z-index: 1;
-}
+.industrial-scroll::-webkit-scrollbar { width: 5px; }
+.industrial-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+.industrial-scroll::-webkit-scrollbar-thumb { background: #8d6b48; border-radius: 3px; }
+.industrial-scroll::-webkit-scrollbar-thumb:hover { background: #b08d68; }
 
 /* ═══════════════════════════════════════════════════
-   INDUSTRIAL SCROLLBAR
-   ═══════════════════════════════════════════════════ */
-
-.industrial-scroll::-webkit-scrollbar { width: 3px; }
-.industrial-scroll::-webkit-scrollbar-track { background: rgba(5,5,5,0.5); }
-.industrial-scroll::-webkit-scrollbar-thumb { background: rgba(224, 83, 32, 0.25); }
-.industrial-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255, 184, 0, 0.5); }
-
-/* ═══════════════════════════════════════════════════
-   STATUS PULSE INDICATORS
-   ═══════════════════════════════════════════════════ */
-
-@keyframes status-pulse {
-  0%, 100% { box-shadow: 0 0 4px currentColor; opacity: 1; }
-  50% { box-shadow: 0 0 10px currentColor, 0 0 20px currentColor; opacity: 0.7; }
-}
-
-.status-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 0;
-  animation: status-pulse 2.5s ease-in-out infinite;
-}
-
-.status-dot-online { background: #22c55e; color: #22c55e; }
-.status-dot-warning { background: #ffb800; color: #ffb800; }
-.status-dot-offline { background: #e05320; color: #e05320; }
-
-/* ═══════════════════════════════════════════════════
-   METRIC BAR — HORIZONTAL GAUGE
+   METRIC GAUGES
    ═══════════════════════════════════════════════════ */
 
 .metric-bar {
-  height: 3px;
-  background: rgba(255,255,255,0.05);
+  height: 5px;
+  background: #3e2e21;
   position: relative;
   overflow: hidden;
+  border-radius: 2px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
 .metric-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #e05320, #ffb800);
+  background: linear-gradient(90deg, #f0a929, #e05320);
   transition: width 1s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* ═══════════════════════════════════════════════════
-   DRAG & DROP ZONE
-   ═══════════════════════════════════════════════════ */
-
+/* Drag & Drop Zone */
 .drop-zone {
-  border: 1px dashed rgba(224, 83, 32, 0.25);
+  border: 2px dashed #8d6b48;
+  border-radius: 8px;
   transition: all 0.3s ease;
 }
 
 .drop-zone.drag-active {
-  border-color: #ffb800;
-  background: rgba(255, 184, 0, 0.04);
-  box-shadow: inset 0 0 30px rgba(255, 184, 0, 0.05);
+  border-color: #f0a929;
+  background: rgba(240, 169, 41, 0.05);
+}
+
+/* Shutter transitions */
+.shutter-top, .shutter-bottom {
+  z-index: 100;
+}
+
+/* Text Flicker */
+@keyframes flicker {
+  0%, 95%, 100% { opacity: 1; }
+  96% { opacity: 0.5; }
+  97% { opacity: 1; }
+  98% { opacity: 0.3; }
+}
+.text-flicker {
+  animation: flicker 5s infinite;
 }
 
 /* ═══════════════════════════════════════════════════
-   UTILITY ANIMATIONS
+   ORION DASHBOARD VISUAL OVERHAUL & POLISH
    ═══════════════════════════════════════════════════ */
 
-@keyframes flicker {
-  0%, 95%, 100% { opacity: 1; }
-  96% { opacity: 0.4; }
-  97% { opacity: 1; }
-  98% { opacity: 0.6; }
+/* Dashboard Wallpaper Backdrop */
+.dashboard-bg-illustration {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
+  transform: scale(1.02);
+  filter: contrast(1.1) brightness(0.9);
 }
 
-.text-flicker {
-  animation: flicker 4s infinite;
+/* Logo Enhancements */
+@keyframes logo-breath {
+  0%, 100% {
+    text-shadow: 0 0 8px rgba(240, 169, 41, 0.35), 0 0 18px rgba(240, 169, 41, 0.15);
+    transform: scale(1) translateY(0px);
+  }
+  50% {
+    text-shadow: 0 0 16px rgba(240, 169, 41, 0.7), 0 0 28px rgba(240, 169, 41, 0.3);
+    transform: scale(1.025) translateY(-1px);
+  }
 }
 
-@keyframes data-stream {
-  0% { background-position: 0% 0%; }
-  100% { background-position: 100% 100%; }
+.orion-logo-glow {
+  text-shadow: 0 0 10px rgba(240, 169, 41, 0.4), 0 0 20px rgba(240, 169, 41, 0.2);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: inline-block;
+  animation: logo-breath 5s ease-in-out infinite;
 }
+
+.orion-logo-glow:hover {
+  text-shadow: 0 0 20px rgba(240, 169, 41, 0.95), 0 0 40px rgba(240, 169, 41, 0.6);
+  transform: scale(1.06) translateY(-3px);
+  color: #ffffff;
+  animation-play-state: paused;
+}
+
+/* Oscilloscope Bouncing Animation */
+@keyframes bounce-bar-idle {
+  0%, 100% { transform: scaleY(0.25); }
+  50% { transform: scaleY(0.55); }
+}
+
+@keyframes bounce-bar-active {
+  0%, 100% { transform: scaleY(0.45); }
+  50% { transform: scaleY(1); }
+}
+
+.oscilloscope-bar {
+  transform-origin: bottom;
+  animation: bounce-bar-idle 1.5s ease-in-out infinite;
+  will-change: transform;
+}
+
+.oscilloscope-bar.stream-active {
+  animation-name: bounce-bar-active;
+}
+
+/* Springy Chat Bubble Transitions */
+.chat-bubble-enter-active {
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.chat-bubble-enter-from {
+  opacity: 0;
+  transform: translateY(30px) scale(0.95);
+}
+
+.chat-bubble-leave-active {
+  transition: all 0.3s ease;
+  position: absolute;
+}
+
+.chat-bubble-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.chat-bubble-move {
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Suggestion Cards grid */
+.suggestion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  width: 100%;
+  max-width: 580px;
+  margin: 16px auto 0 auto;
+}
+
+.suggestion-card {
+  background: linear-gradient(135deg, #ffffff 0%, #fbf9f4 100%);
+  border: 2px dashed #cca37a;
+  border-radius: 12px;
+  padding: 14px 16px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 2px 2px 6px rgba(45, 30, 15, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.suggestion-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 4px; height: 100%;
+  background: #f0a929;
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+}
+
+.suggestion-card:hover {
+  border-style: solid;
+  border-color: #f0a929;
+  background: #fffdfa;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(141, 107, 72, 0.18);
+}
+
+.suggestion-card:hover::before {
+  transform: scaleY(1);
+}
+
+.suggestion-card:active {
+  transform: translateY(-1px);
+}
+
+.suggestion-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 10px;
+  color: #1a140f;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.suggestion-desc {
+  font-size: 9px;
+  color: #8d6b48;
+  line-height: 1.3;
+}
+
+/* Leaf Blueprints and Watermarks */
+.watermark-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  opacity: 0.035;
+}
+
+/* Enhancing dashboard panel hover feedback */
+.solarpunk-side-chassis, .solarpunk-chassis {
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.solarpunk-side-chassis:hover {
+  border-color: #fde4c5 #7e5527 #67421a #eecfa4;
+  box-shadow: 
+    0 15px 30px rgba(28,21,14,0.45), 
+    0 0 15px rgba(240, 169, 41, 0.15),
+    inset 0 1px 1px rgba(255,255,255,0.4);
+}
+
+/* Metric fill gloss effects */
+.metric-bar-fill {
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
+  animation: sheen 3.5s infinite linear;
+}
+
+@keyframes sheen {
+  0% { left: -150%; }
+  100% { left: 150%; }
+}
+
+/* Glassmorphic input fields inside login page */
+#login-view input[type="email"],
+#login-view input[type="password"] {
+  background-color: rgba(12, 12, 10, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 2px solid #543b23;
+  box-shadow: 
+    inset 2px 2px 5px rgba(0,0,0,0.8),
+    0 4px 10px rgba(0,0,0,0.2);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+#login-view input[type="email"]:focus,
+#login-view input[type="password"]:focus {
+  border-color: #f0a929;
+  background-color: rgba(12, 12, 10, 0.8);
+  box-shadow: 
+    inset 2px 2px 5px rgba(0,0,0,0.9),
+    0 0 10px rgba(240, 169, 41, 0.4);
+}
+
+/* WebKit autofill custom styling to maintain theme */
+#login-view input:-webkit-autofill,
+#login-view input:-webkit-autofill:hover, 
+#login-view input:-webkit-autofill:focus, 
+#login-view input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px rgba(12, 12, 10, 0.95) inset !important;
+  -webkit-text-fill-color: #f4ede2 !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Repeating Grid Pattern for Recessed Parchment Laytrack */
+.recessed-slot-paper {
+  position: relative;
+}
+
+.recessed-slot-paper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(141, 107, 72, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(141, 107, 72, 0.02) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 1;
+  border-radius: 11px;
+}
+
+/* Embossed Watermark Effect */
+.engraved-watermark {
+  filter: drop-shadow(1px 1px 1px rgba(255, 255, 255, 0.6)) drop-shadow(-1px -1px 1.5px rgba(0, 0, 0, 0.28));
+}
+
+/* Idle Bio-Resonance waveform bar animation */
+.core-wave-bar {
+  display: inline-block;
+  width: 2px;
+  height: 10px;
+  background-color: #8d6b48;
+  opacity: 0.35;
+  border-radius: 1px;
+  animation: core-wave-bounce 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes core-wave-bounce {
+  0% { transform: scaleY(0.4); opacity: 0.25; }
+  100% { transform: scaleY(1.3); opacity: 0.55; }
+}
+
+/* Inset Engraved Plaque styling */
+.instruction-plaque {
+  background-color: rgba(141, 107, 72, 0.04);
+  box-shadow: 
+    inset 2px 2px 5px rgba(28, 21, 14, 0.15),
+    1px 1px 2px rgba(255, 255, 255, 0.75);
+}
+
