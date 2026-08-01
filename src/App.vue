@@ -636,9 +636,9 @@ onUnmounted(() => { destroySystem() })
         </div>
 
       <button @click="showDocModal = true" 
-    class="mt-3 w-full border border-[#f0a929]/50 text-[#f0a929] hover:bg-[#f0a929] hover:text-[#1a140f] py-2 rounded text-[8px] font-mono font-bold tracking-widest uppercase transition-all">
-    [ VIEW CHROMADB DIRECTORY ]
-  </button>
+        class="mt-3 w-full border border-[#f0a929]/70 text-[#f0a929] hover:bg-[#f0a929] hover:text-[#1a140f] py-2.5 rounded-xl text-[8px] font-mono font-extrabold tracking-widest uppercase transition-all duration-150 shadow-md active:scale-95 active:translate-y-0.5 hover:shadow-[0_0_18px_rgba(240,169,41,0.5)] cursor-pointer">
+        [ VIEW CHROMADB DIRECTORY ]
+      </button>
 
       </div>
 
@@ -675,11 +675,18 @@ onUnmounted(() => { destroySystem() })
       </div>
     </aside>
     </div>
-    <UserManagementModal 
-      v-if="showUserManagement" 
-      @close="showUserManagement = false" 
-    />
-    <DocumentManagementModal v-if="showDocModal && currentUser?.role === 'admin'" @close="showDocModal = false" />
+
+    <!-- Animated Modals -->
+    <Transition name="solarpunk-pop">
+      <UserManagementModal 
+        v-if="showUserManagement" 
+        @close="showUserManagement = false" 
+      />
+    </Transition>
+
+    <Transition name="solarpunk-pop">
+      <DocumentManagementModal v-if="showDocModal && currentUser?.role === 'admin'" @close="showDocModal = false" />
+    </Transition>
   </div>
 </template>
 

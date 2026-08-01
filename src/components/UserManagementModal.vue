@@ -3,7 +3,7 @@
     <div class="solarpunk-chassis w-full max-w-6xl h-[85vh] rounded-3xl p-6 flex flex-col relative border-2 border-[#8d6b48]/50 shadow-[0_0_50px_rgba(26,20,15,0.9)]">
       
       <button @click="$emit('close')" 
-        class="absolute top-5 right-5 bg-[#1a140f] border border-[#e05320]/70 text-[#e05320] hover:bg-[#e05320] hover:text-[#1a140f] px-4 py-2 rounded text-[10px] font-mono font-bold tracking-[0.2em] transition-all shadow-[2px_2px_5px_rgba(0,0,0,0.5)] z-20">
+        class="absolute top-5 right-5 bg-[#1a140f] border border-[#e05320]/70 text-[#e05320] hover:bg-[#e05320] hover:text-[#1a140f] px-4 py-2 rounded-xl text-[10px] font-mono font-bold tracking-[0.2em] transition-all duration-150 shadow-md active:scale-95 active:translate-y-0.5 hover:shadow-[0_0_15px_rgba(224,83,32,0.5)] z-20 cursor-pointer">
         [ X ] TERMINATE
       </button>
 
@@ -42,7 +42,7 @@
               </select>
             </div>
 
-            <!-- Jika lagi mode Edit, kita tampilkan NIP sebagai text info saja (tidak bisa diedit) -->
+            <!-- Jika lagi mode Edit, kita tampilkan NIP sebagai text info saja -->
             <div v-if="isEditing" class="bg-[#1a140f] p-3 border border-[#4a3424] rounded border-l-4 border-l-[#e05320]">
               <label class="block text-[7px] font-display font-black uppercase tracking-[0.2em] text-[#cca37a] mb-1">TARGET NIP (LOCKED)</label>
               <p class="text-[11px] text-[#f0a929] font-mono font-bold">{{ form.nip }}</p>
@@ -80,11 +80,11 @@
             <!-- Action Buttons -->
             <div class="flex gap-2 mt-4">
               <button v-if="isEditing" type="button" @click="cancelEdit"
-                class="w-1/3 py-3 border border-[#4a3424] text-[#cca37a] hover:bg-[#4a3424] hover:text-white rounded text-[8px] font-mono tracking-widest uppercase transition-colors">
+                class="w-1/3 py-3 border border-[#4a3424] text-[#cca37a] hover:bg-[#4a3424] hover:text-white rounded-xl text-[8px] font-mono tracking-widest uppercase transition-all duration-150 active:scale-95 active:translate-y-0.5">
                 CANCEL
               </button>
               <button type="submit" :disabled="isLoading"
-                class="tactile-btn flex-1 py-3 text-[9px] tracking-[0.3em] uppercase">
+                class="tactile-btn flex-1 py-3 text-[9px] tracking-[0.3em] uppercase transition-all duration-150 active:scale-95 active:translate-y-0.5 hover:shadow-[0_0_15px_rgba(240,169,41,0.5)]">
                 {{ isLoading ? 'PROCESSING...' : (isEditing ? 'SAVE CHANGES' : 'EXECUTE NEW USER') }}
               </button>
             </div>
@@ -130,9 +130,9 @@
                       {{ user.role }}
                     </span>
                   </td>
-                  <td class="p-3 text-right space-x-3 text-[8px] tracking-widest">
-                    <button @click="editUser(user)" class="text-[#f0a929] hover:text-white transition-colors">[EDIT]</button>
-                    <button @click="deleteUser(user.id)" class="text-[#e05320] hover:text-white transition-colors">[DEL]</button>
+                  <td class="p-3 text-right space-x-2 text-[8px] tracking-widest">
+                    <button @click="editUser(user)" class="px-2 py-1 bg-[#f0a929]/10 border border-[#f0a929]/40 text-[#f0a929] hover:bg-[#f0a929] hover:text-[#1a140f] rounded-lg transition-all duration-150 active:scale-95 active:translate-y-0.5 font-bold">[EDIT]</button>
+                    <button @click="promptDeleteUser(user)" class="px-2 py-1 bg-[#e05320]/10 border border-[#e05320]/40 text-[#e05320] hover:bg-[#e05320] hover:text-white rounded-lg transition-all duration-150 active:scale-95 active:translate-y-0.5 font-bold">[DEL]</button>
                   </td>
                 </tr>
                 <tr v-if="isFetching">
@@ -147,6 +147,96 @@
         
       </div>
     </div>
+
+    <!-- CUSTOM ANIMATED SOLARPUNK CONFIRM DIALOG FOR USER DELETION -->
+    <Transition name="solarpunk-pop">
+      <div v-if="confirmDialog.isOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+        <div class="w-full max-w-md bg-[#120d09] border-2 border-[#ef4444] rounded-3xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.9)] relative text-left outline outline-1 outline-[#ef4444]/30">
+          
+          <!-- Top Warning Header -->
+          <div class="flex items-center gap-3 mb-4 pb-3 border-b border-[#ef4444]/30">
+            <span class="w-3.5 h-3.5 rounded-full bg-[#ef4444] shadow-[0_0_14px_#ef4444] animate-pulse"></span>
+            <div>
+              <h3 class="text-sm font-display font-black text-[#ef4444] uppercase tracking-[0.25em] drop-shadow-sm">
+                // SYS::TERMINATE_OPERATOR
+              </h3>
+              <p class="text-[9px] text-[#d4b996] font-mono tracking-widest uppercase font-bold">REVOKE OPERATOR ACCESS</p>
+            </div>
+          </div>
+
+          <!-- Message Body -->
+          <div class="bg-[#080503] border border-[#ef4444]/30 rounded-2xl p-4 mb-6 font-mono">
+            <p class="text-[11px] text-[#fef3c7] leading-relaxed">
+              Apakah Anda yakin ingin mencabut & menghapus data operator ini?
+            </p>
+            <div class="mt-2.5 bg-[#1f130b] border border-[#ef4444]/40 rounded-xl p-3 flex items-center gap-2">
+              <span class="text-lg">👤</span>
+              <div>
+                <p class="text-[11px] font-bold text-[#fef08a] leading-snug">
+                  {{ confirmDialog.username }} (NIP: {{ confirmDialog.nip }})
+                </p>
+                <p class="text-[9px] text-[#cca37a] mt-0.5">{{ confirmDialog.email }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex justify-end gap-3 font-mono">
+            <button @click="confirmDialog.isOpen = false" 
+              class="px-5 py-2.5 bg-[#26180f] hover:bg-[#382417] text-[#e5e7eb] text-[10px] font-bold tracking-wider rounded-xl border border-[#78350f] transition-all active:scale-95 shadow-md">
+              [ CANCEL ]
+            </button>
+            <button @click="executeDeleteUser" 
+              class="px-5 py-2.5 bg-gradient-to-r from-[#dc2626] to-[#ea580c] hover:from-[#ef4444] hover:to-[#f97316] text-white text-[10px] font-extrabold tracking-wider rounded-xl border border-[#fca5a5]/30 shadow-[0_0_20px_rgba(220,38,38,0.5)] transition-all active:scale-95 flex items-center gap-2">
+              <span>🔥</span> [ TERMINATE ACCESS ]
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </Transition>
+
+    <!-- CUSTOM ANIMATED SOLARPUNK NOTIFICATION DIALOG -->
+    <Transition name="solarpunk-pop">
+      <div v-if="notifyDialog.isOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+        <div class="w-full max-w-md rounded-3xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.9)] relative text-left transition-all border-2"
+             :class="notifyDialog.type === 'error' ? 'bg-[#180b0b] border-[#ef4444] outline outline-1 outline-[#ef4444]/30' : 'bg-[#0a180e] border-[#10b981] outline outline-1 outline-[#10b981]/30'">
+          
+          <!-- Notification Header -->
+          <div class="flex items-center gap-3 mb-4 pb-3 border-b"
+               :class="notifyDialog.type === 'error' ? 'border-[#ef4444]/30' : 'border-[#10b981]/30'">
+            <span class="w-3.5 h-3.5 rounded-full shadow-md"
+                  :class="notifyDialog.type === 'error' ? 'bg-[#ef4444] shadow-[0_0_14px_#ef4444] animate-pulse' : 'bg-[#10b981] shadow-[0_0_14px_#10b981] animate-pulse'"></span>
+            <div>
+              <h3 class="text-sm font-display font-black uppercase tracking-[0.25em]"
+                  :class="notifyDialog.type === 'error' ? 'text-[#ef4444]' : 'text-[#34d399]'">
+                // SYS::LOG_NOTIFICATION
+              </h3>
+              <p class="text-[9px] text-[#d4b996] font-mono tracking-widest uppercase font-bold">TELEMETRY ACKNOWLEDGEMENT</p>
+            </div>
+          </div>
+
+          <!-- Notification Body -->
+          <div class="rounded-2xl p-4 mb-6 font-mono border"
+               :class="notifyDialog.type === 'error' ? 'bg-[#0d0505] border-[#ef4444]/20' : 'bg-[#040e07] border-[#10b981]/20'">
+            <p class="text-[11px] text-[#fef3c7] leading-relaxed font-bold">
+              {{ notifyDialog.message }}
+            </p>
+          </div>
+
+          <!-- Action Button -->
+          <div class="flex justify-end font-mono">
+            <button @click="notifyDialog.isOpen = false" 
+              class="px-6 py-2.5 text-[10px] font-extrabold tracking-wider rounded-xl transition-all active:scale-95 border"
+              :class="notifyDialog.type === 'error' ? 'bg-gradient-to-r from-[#dc2626] to-[#ea580c] hover:from-[#ef4444] hover:to-[#f97316] text-white border-[#fca5a5]/30 shadow-[0_0_20px_rgba(220,38,38,0.4)]' : 'bg-gradient-to-r from-[#059669] to-[#0d9488] hover:from-[#10b981] hover:to-[#14b8a6] text-white border-[#a7f3d0]/30 shadow-[0_0_20px_rgba(16,185,129,0.4)]'">
+              [ ACKNOWLEDGE ]
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </Transition>
+
   </div>
 </template>
 
@@ -161,12 +251,26 @@ const isLoading = ref(false)
 const message = ref('')
 const isError = ref(false)
 
+const confirmDialog = ref({
+  isOpen: false,
+  id: null,
+  username: '',
+  nip: '',
+  email: ''
+})
+
+const notifyDialog = ref({
+  isOpen: false,
+  message: '',
+  type: 'success'
+})
+
 // State untuk Edit/Update
 const isEditing = ref(false)
 const editId = ref(null)
 
 const form = ref({
-  nip: '', // NIP tetep ada di form state buat nyimpen data pas lagi Edit
+  nip: '',
   username: '',
   email: '',
   no_hp: '',
@@ -219,13 +323,12 @@ const submitUser = async () => {
       isError.value = false
       message.value = isEditing.value 
         ? 'DATA OPERATOR BERHASIL DIUPDATE!' 
-        : data.message // Nampilin pesan + default password dari backend
+        : data.message
       
-      cancelEdit() // Reset form ke kosong
-      fetchUsers() // Refresh tabel
+      cancelEdit()
+      fetchUsers()
     } else {
       isError.value = true
-      // Kalau error berupa objek (dari validasi CI4), kita gabungin
       if (typeof data.messages === 'object') {
         message.value = Object.values(data.messages).join(' | ')
       } else {
@@ -240,13 +343,12 @@ const submitUser = async () => {
   }
 }
 
-// Persiapan form buat Edit User
 const editUser = (user) => {
   isEditing.value = true
   editId.value = user.id
   message.value = ''
   form.value = { 
-    nip: user.nip, // Disimpan buat ditampilin doang di UI
+    nip: user.nip,
     username: user.username, 
     email: user.email, 
     no_hp: user.no_hp || '', 
@@ -255,7 +357,6 @@ const editUser = (user) => {
   }
 }
 
-// Batal Edit / Reset form
 const cancelEdit = () => {
   isEditing.value = false
   editId.value = null
@@ -263,9 +364,19 @@ const cancelEdit = () => {
   form.value = { nip: '', username: '', email: '', no_hp: '', divisi: 'general', role: 'user' }
 }
 
-// Fungsi Delete User
-const deleteUser = async (id) => {
-  if (!confirm('Peringatan: Apakah Anda yakin ingin menghapus data operator (Terminate) ini?')) return
+const promptDeleteUser = (user) => {
+  confirmDialog.value = {
+    isOpen: true,
+    id: user.id,
+    username: user.username,
+    nip: user.nip,
+    email: user.email
+  }
+}
+
+const executeDeleteUser = async () => {
+  const id = confirmDialog.value.id
+  confirmDialog.value.isOpen = false
   
   try {
     const res = await fetch(`http://localhost:8084/api/users/${id}`, {
@@ -273,12 +384,26 @@ const deleteUser = async (id) => {
       headers: { 'Authorization': `Bearer ${getToken()}` }
     })
     if (res.ok) {
-      alert('Operator berhasil dihapus!')
+      notifyDialog.value = {
+        isOpen: true,
+        message: 'Akses Operator berhasil dicabut!',
+        type: 'success'
+      }
       fetchUsers()
       if (editId.value === id) cancelEdit()
+    } else {
+      notifyDialog.value = {
+        isOpen: true,
+        message: 'Gagal menghapus operator.',
+        type: 'error'
+      }
     }
   } catch (error) {
-    alert('Gagal menghapus operator.')
+    notifyDialog.value = {
+      isOpen: true,
+      message: 'Gagal menghapus operator. Terjadi kesalahan koneksi.',
+      type: 'error'
+    }
   }
 }
 
@@ -292,4 +417,20 @@ onMounted(() => {
 .industrial-scroll::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.5); border-radius: 4px; }
 .industrial-scroll::-webkit-scrollbar-thumb { background: rgba(141, 107, 72, 0.8); border-radius: 4px; }
 .industrial-scroll::-webkit-scrollbar-thumb:hover { background: rgba(240, 169, 41, 1); }
+
+/* Solarpunk Pop Animation */
+.solarpunk-pop-enter-active {
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.solarpunk-pop-leave-active {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.solarpunk-pop-enter-from {
+  opacity: 0;
+  transform: scale(0.85) translateY(-20px);
+}
+.solarpunk-pop-leave-to {
+  opacity: 0;
+  transform: scale(0.9) translateY(10px);
+}
 </style>

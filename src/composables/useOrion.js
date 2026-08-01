@@ -247,10 +247,11 @@ export function useOrion() {
   formData.append('divisi', targetDivisi.value)
 
   try {
-    const token = localStorage.getItem('orion_token') // 🟢 Ambil JWT Token
+    const token = localStorage.getItem('orion_token')
     const res = await axios.post('http://localhost:8000/upload', formData, {
       headers: {
-        'Authorization': `Bearer ${token}`, // 🟢 Sisipkan Token Header
+        'Authorization': `Bearer ${token}`,
+        'X-Orion-Secret': 'ORION_Super_Secret_Key_Token_123',
         'Content-Type': 'multipart/form-data'
       }
     })
