@@ -122,6 +122,9 @@ export function useOrion() {
 
         const tl = gsap.timeline({
           onComplete: () => {
+            messages.value = [
+              { id: 1, role: 'orion', text: 'SYS::INIT — ORION RAG Engine operational. Awaiting query input. All document indices loaded.', citations: [] }
+            ]
             isLoggedIn.value = true
             setTimeout(() => {
               triggerDashboardIntro()
@@ -146,6 +149,9 @@ export function useOrion() {
         localStorage.removeItem('orion_token')
         localStorage.removeItem('orion_user')
         currentUser.value = null
+        messages.value = [
+          { id: 1, role: 'orion', text: 'SYS::INIT — ORION RAG Engine operational. Awaiting query input. All document indices loaded.', citations: [] }
+        ]
         isLoggedIn.value = false
         setTimeout(() => {
           triggerLoginIntro()
@@ -266,6 +272,115 @@ export function useOrion() {
 
 
 
+  // ── Pinned Citations, Feedback & Escalations State ──
+  const pinnedCitations = ref(JSON.parse(localStorage.getItem('orion_pinned_citations') || '[]'))
+  const chatHistoryList = ref([])
+  const userEscalationsList = ref([])
+
+  const toggleBookmark = (citation) => {
+    const existsIndex = pinnedCitations.value.findIndex(c => c.file === citation.file && c.page === citation.page)
+    if (existsIndex > -1) {
+      pinnedCitations.value.splice(existsIndex, 1)
+    } else {
+      pinnedCitations.value.push(citation)
+    }
+    localStorage.setItem('orion_pinned_citations', JSON.stringify(pinnedCitations.value))
+  }
+
+  const submitFeedback = async (msgText, rating) => {
+    try {
+      const token = localStorage.getItem('orion_token')
+      const uid = currentUser.value?.id || 1
+      await axios.post('http://localhost:8084/api/chat/feedback', {
+        user_id: uid,
+        message: msgText,
+        rating: rating
+      }, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      addLog(`FEEDBACK_SAVED: [${rating.toUpperCase()}]`)
+      return true
+    } catch (err) {
+      console.error('Feedback submit failed:', err)
+      return false
+    }
+  }
+
+  const escalateQuery = async (question) => {
+    try {
+      const token = localStorage.getItem('orion_token')
+      const div = currentUser.value?.divisi || 'universal'
+      const res = await axios.post('http://localhost:8084/api/escalations', {
+        question: question,
+        user_divisi: div
+      }, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      addLog(`ESCALATION_SENT: "${question.substring(0, 30)}..."`)
+      await fetchEscalations()
+      return res.data
+    } catch (err) {
+      console.error('Escalation failed:', err)
+      throw err
+    }
+  }
+
+  const fetchChatHistory = async () => {
+    try {
+      const token = localStorage.getItem('orion_token')
+      const res = await axios.get('http://localhost:8084/api/chat/history', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      if (res.data && res.data.data) {
+        chatHistoryList.value = res.data.data
+      }
+    } catch (err) {
+      console.error('Fetch chat history failed:', err)
+    }
+  }
+
+  const fetchAnalytics = async () => {
+    try {
+      const token = localStorage.getItem('orion_token')
+      const res = await axios.get('http://localhost:8084/api/analytics/summary', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      return res.data?.data
+    } catch (err) {
+      console.error('Fetch analytics failed:', err)
+      return null
+    }
+  }
+
+  const fetchEscalations = async () => {
+    try {
+      const token = localStorage.getItem('orion_token')
+      const res = await axios.get('http://localhost:8084/api/escalations', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      userEscalationsList.value = res.data?.data || []
+      return userEscalationsList.value
+    } catch (err) {
+      console.error('Fetch escalations failed:', err)
+      return []
+    }
+  }
+
+  const replyEscalation = async (id, answer) => {
+    try {
+      const token = localStorage.getItem('orion_token')
+      const res = await axios.post(`http://localhost:8084/api/escalations/${id}/reply`, {
+        answer: answer
+      }, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      return res.data
+    } catch (err) {
+      console.error('Reply escalation failed:', err)
+      throw err
+    }
+  }
+
   // ── Logs ──
   const addLog = (msg) => {
     systemLogs.value.unshift({ t: currentTime.value, msg })
@@ -277,9 +392,11 @@ export function useOrion() {
     messages, inputMessage, isTyping,
     currentTime, uptimeSeconds, formattedUptime, systemMetrics,
     isDragOver, uploadStatus, uploadFileName, systemLogs,
-    targetDivisi,
+    targetDivisi, pinnedCitations, chatHistoryList, userEscalationsList,
     initSystem, destroySystem,
     handleLogin, handleLogout, sendMessage,
-    handleDragOver, handleDragLeave, handleDrop, handleFileInput
+    handleDragOver, handleDragLeave, handleDrop, handleFileInput,
+    toggleBookmark, submitFeedback, escalateQuery, fetchChatHistory,
+    fetchAnalytics, fetchEscalations, replyEscalation
   }
 }

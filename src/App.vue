@@ -2,23 +2,111 @@
 import { onMounted, onUnmounted, ref } from 'vue'
 import { marked } from 'marked'
 import { gsap } from 'gsap'
+import axios from 'axios'
 import { useOrion } from './composables/useOrion.js'
 import UserManagementModal from './components/UserManagementModal.vue'
 import DocumentManagementModal from './components/DocumentManagementModal.vue'
+import UserWorkspaceLayout from './components/UserWorkspaceLayout.vue'
+import AnalyticsDashboardModal from './components/AnalyticsDashboardModal.vue'
 
 const {
   isLoggedIn, email, password, authError, authLoading, currentUser,
   messages, inputMessage, isTyping,
   currentTime, formattedUptime, systemMetrics,
   isDragOver, uploadStatus, uploadFileName, systemLogs,
-  targetDivisi, uploadFile,
+  targetDivisi, pinnedCitations, chatHistoryList, userEscalationsList,
   initSystem, destroySystem,
   handleLogin, handleLogout, sendMessage,
-  handleDragOver, handleDragLeave, handleDrop, handleFileInput
+  handleDragOver, handleDragLeave, handleDrop, handleFileInput,
+  toggleBookmark, submitFeedback, escalateQuery, fetchChatHistory,
+  fetchAnalytics, fetchEscalations, replyEscalation
 } = useOrion()
+
+const handleInjectHrMessage = (esc) => {
+  messages.value.push({
+    id: Date.now(),
+    role: 'hr_admin',
+    text: esc.answer,
+    question: esc.question,
+    resolved_by: esc.resolved_by || 'Administrator'
+  })
+  triggerNotification('💬 Jawaban HR/Admin berhasil ditampilkan di canvas chat!')
+}
 
 const showUserManagement = ref(false)
 const showDocModal = ref(false)
+const showAnalyticsModal = ref(false)
+const analyticsSummary = ref(null)
+const escalationsList = ref([])
+
+const showSummaryModal = ref(false)
+const summaryTopic = ref('')
+const executiveSummaryText = ref('')
+const isGeneratingSummary = ref(false)
+const notificationMsg = ref('')
+
+const triggerNotification = (msg) => {
+  notificationMsg.value = msg
+  setTimeout(() => {
+    notificationMsg.value = ''
+  }, 3500)
+}
+
+const handleOpenAnalytics = async () => {
+  analyticsSummary.value = await fetchAnalytics()
+  escalationsList.value = await fetchEscalations()
+  showAnalyticsModal.value = true
+}
+
+const handleReplyEscalation = async ({ id, answer }) => {
+  await replyEscalation(id, answer)
+  triggerNotification('✓ Balasan eskalasi berhasil terkirim!')
+  analyticsSummary.value = await fetchAnalytics()
+  escalationsList.value = await fetchEscalations()
+}
+
+const handleRateAnswer = async ({ msgText, rating }) => {
+  const ok = await submitFeedback(msgText, rating)
+  if (ok) {
+    triggerNotification(`Terimakasih! Feedback [${rating.toUpperCase()}] tersimpan.`)
+  }
+}
+
+const handleEscalateQuery = async (question) => {
+  try {
+    await escalateQuery(question)
+    triggerNotification('🚀 Pertanyaan berhasil dieskalasikan ke HR/Admin!')
+  } catch (err) {
+    triggerNotification('❌ Gagal mengirim eskalasi.')
+  }
+}
+
+const handleOpenSummary = async () => {
+  showSummaryModal.value = true
+  await runGenerateSummary()
+}
+
+const runGenerateSummary = async () => {
+  isGeneratingSummary.value = true
+  executiveSummaryText.value = 'Menganalisis indeks dokumen...'
+  try {
+    const token = localStorage.getItem('orion_token')
+    const res = await axios.post('http://localhost:8000/summarize', {
+      topic: summaryTopic.value || 'Ringkasan Umum SOP Operasional',
+      user_divisi: currentUser.value?.divisi || 'universal'
+    }, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'X-Orion-Secret': 'ORION_Super_Secret_Key_Token_123'
+      }
+    })
+    executiveSummaryText.value = res.data?.summary || 'Gagal menghasilkan summary.'
+  } catch (err) {
+    executiveSummaryText.value = 'Terjadi kesalahan koneksi ke Summarization Engine.'
+  } finally {
+    isGeneratingSummary.value = false
+  }
+}
 
 const handleBackgroundParallax = (e) => {
   const bg = document.querySelector('.login-bg-illustration')
@@ -274,8 +362,31 @@ onUnmounted(() => { destroySystem() })
     <!-- Soft Warm Vignette Overlay to blend the chassis with the wallpaper -->
     <div class="absolute inset-0 bg-gradient-to-tr from-[#1a140f]/95 via-[#1a140f]/60 to-[#1a140f]/85 mix-blend-multiply pointer-events-none z-0"></div>
 
-    <!-- Main Grid Content -->
-    <div class="w-full h-full grid p-6 relative z-10"
+    <!-- Non-Admin Focus Workspace Layout -->
+    <div v-if="currentUser?.role !== 'admin'" class="w-full h-full p-6 relative z-10 flex">
+      <UserWorkspaceLayout 
+        :currentUser="currentUser"
+        :messages="messages"
+        v-model:inputMessage="inputMessage"
+        :isTyping="isTyping"
+        :pinnedCitations="pinnedCitations"
+        :chatHistory="chatHistoryList"
+        :userEscalations="userEscalationsList"
+        @send-message="sendMessage"
+        @logout="handleLogout"
+        @toggle-bookmark="toggleBookmark"
+        @rate-answer="handleRateAnswer"
+        @escalate-query="handleEscalateQuery"
+        @fetch-history="fetchChatHistory"
+        @fetch-user-escalations="fetchEscalations"
+        @load-history="(q) => inputMessage = q"
+        @open-summary="handleOpenSummary"
+        @inject-hr-message="handleInjectHrMessage"
+      />
+    </div>
+
+    <!-- Admin Command Center Grid Layout -->
+    <div v-else class="w-full h-full grid p-6 relative z-10"
       style="grid-template-columns: 24% 51% 25%; gap: 16px;">
 
       <!-- ── LEFT COMPARTMENT: IDENTITY & ANALOGUE STATS ── -->
@@ -354,13 +465,20 @@ onUnmounted(() => { destroySystem() })
         <!-- Operator Badge -->
         <div v-if="currentUser" class="pt-3 border-t border-[#ffffff]/5">
           <p class="text-[7px] text-[#cca37a] tracking-[0.3em] uppercase font-display font-black mb-1">ACTIVE OPERATOR</p>
-          <p class="text-[9px] text-[#f4ede2] font-mono truncate">{{ currentUser.username || currentUser.email }}</p>
-          <button 
-            v-if="currentUser.role === 'admin'" 
-            @click="showUserManagement = true"
-            class="w-full mt-2 py-2 bg-[#f0a929]/10 border border-[#f0a929]/30 text-[#f0a929] hover:bg-[#f0a929] hover:text-[#1a140f] text-[8px] tracking-[0.2em] uppercase font-mono transition-colors">
-            [ ACCESS CONTROL ]
-          </button>
+          <p class="text-[9px] text-[#f4ede2] font-mono truncate">{{ currentUser.username || currentUser.email }} ({{ currentUser.role.toUpperCase() }})</p>
+          
+          <div v-if="currentUser.role === 'admin'" class="space-y-1.5 mt-2">
+            <button 
+              @click="showUserManagement = true"
+              class="w-full py-2 bg-[#f0a929]/10 border border-[#f0a929]/30 text-[#f0a929] hover:bg-[#f0a929] hover:text-[#1a140f] text-[8px] tracking-[0.2em] uppercase font-mono transition-colors">
+              [ ACCESS CONTROL ]
+            </button>
+            <button 
+              @click="handleOpenAnalytics"
+              class="w-full py-2 bg-[#10b981]/10 border border-[#10b981]/40 text-[#10b981] hover:bg-[#10b981] hover:text-[#1a140f] text-[8px] tracking-[0.2em] uppercase font-mono transition-colors font-bold">
+              [ 📊 ANALYTICS & ESCALATION DESK ]
+            </button>
+          </div>
         </div>
       </div>
 
@@ -687,6 +805,54 @@ onUnmounted(() => { destroySystem() })
     <Transition name="solarpunk-pop">
       <DocumentManagementModal v-if="showDocModal && currentUser?.role === 'admin'" @close="showDocModal = false" />
     </Transition>
+
+    <Transition name="solarpunk-pop">
+      <AnalyticsDashboardModal 
+        v-if="showAnalyticsModal" 
+        :analyticsData="analyticsSummary" 
+        :escalationsList="escalationsList"
+        @close="showAnalyticsModal = false"
+        @refresh-analytics="handleOpenAnalytics"
+        @reply-escalation="handleReplyEscalation"
+      />
+    </Transition>
+
+    <!-- Executive Summary Drawer Modal -->
+    <Transition name="solarpunk-pop">
+      <div v-if="showSummaryModal" class="fixed inset-0 z-50 flex items-center justify-center bg-[#0c0c0a]/85 backdrop-blur-md p-6">
+        <div class="solarpunk-chassis w-full max-w-3xl rounded-3xl p-6 relative border-2 border-[#8d6b48]/60 shadow-2xl flex flex-col font-mono">
+          <button @click="showSummaryModal = false" class="absolute top-4 right-4 text-[#e05320] font-bold text-xs">
+            [ X CLOSE ]
+          </button>
+          
+          <div class="mb-4 pb-2 border-b border-[#4a3424]">
+            <h3 class="text-lg font-display font-black text-[#1a140f] uppercase">📊 AI EXECUTIVE SUMMARY GENERATOR</h3>
+            <p class="text-[8px] text-[#4a3424] uppercase">Ringkasan Eksekutif Terstruktur dari Dokumen Perusahaan</p>
+          </div>
+
+          <div class="flex gap-2 mb-4">
+            <input v-model="summaryTopic" type="text" placeholder="Fokus Topik (contoh: Prosedur Cuti & Absensi)..."
+              class="flex-1 bg-[#080605] border border-[#4d3725] p-2.5 rounded-xl text-xs text-[#f4ede2] outline-none" />
+            <button @click="runGenerateSummary" :disabled="isGeneratingSummary"
+              class="px-5 py-2.5 bg-[#f0a929] hover:bg-[#e05320] text-[#140e0a] font-bold text-[9px] uppercase rounded-xl transition-all">
+              {{ isGeneratingSummary ? 'GENERATING...' : 'GENERATE' }}
+            </button>
+          </div>
+
+          <div class="bg-[#130f0c] border border-[#4a3424] p-4 rounded-xl text-[10px] text-[#f4ede2] leading-relaxed max-h-96 overflow-y-auto whitespace-pre-wrap">
+            {{ executiveSummaryText }}
+          </div>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- Toast Notification -->
+    <Transition name="solarpunk-pop">
+      <div v-if="notificationMsg" class="fixed bottom-6 right-6 z-50 bg-[#1f150f] border-2 border-[#f0a929] text-[#f4ede2] px-5 py-3 rounded-2xl shadow-2xl font-mono text-[10px] font-bold flex items-center gap-2">
+        <span>✨</span> {{ notificationMsg }}
+      </div>
+    </Transition>
+
   </div>
 </template>
 
