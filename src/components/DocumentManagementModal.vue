@@ -263,7 +263,7 @@ const getBadgeStyle = (divisi) => {
   switch (divisi?.toLowerCase()) {
     case 'teknisi':
       return 'bg-[#e05320]/15 text-[#c2410c] border-[#e05320]/30'
-    case 'cs':
+    case 'finance':
       return 'bg-[#0284c7]/15 text-[#0369a1] border-[#0284c7]/30'
     case 'hr':
       return 'bg-[#a855f7]/15 text-[#7e22ce] border-[#a855f7]/30'

@@ -36,7 +36,7 @@
               <select v-model="form.divisi" required
                 class="w-full bg-[#080605] border border-[#4d3725] px-3 py-2 rounded text-[10px] text-[#f0a929] focus:outline-none focus:border-[#f0a929] font-mono appearance-none">
                 <option value="teknisi">TEKNISI LAPANGAN</option>
-                <option value="cs">CUSTOMER SERVICE</option>
+                <option value="finance">FINANCE / KEUANGAN</option>
                 <option value="hr">HR / MANAGEMENT</option>
                 <option value="general">GENERAL / UMUM</option>
               </select>

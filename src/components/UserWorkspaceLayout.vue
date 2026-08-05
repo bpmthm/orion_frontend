@@ -327,20 +327,22 @@ const activeDivisionSops = computed(() => {
   const div = props.currentUser?.divisi?.toLowerCase() || 'general'
   if (div === 'teknisi') {
     return [
-      { name: 'SOP-TEK-01_Troubleshooting.pdf', type: 'TEKNISI' },
-      { name: 'SOP-TEK-02_Standard_Peralatan.pdf', type: 'TEKNISI' },
-      { name: 'SOP-HRD-2024_General.pdf', type: 'UNIVERSAL' }
+      { name: 'GitLab_Eng_Corporate_IT.pdf', type: 'TEKNISI' },
+      { name: 'GitLab_Eng_Infrastructure_Platforms.pdf', type: 'TEKNISI' },
+      { name: 'GitLab_Eng_Security_Risk_Management.pdf', type: 'TEKNISI' },
+      { name: 'GitLab_HR_People_Policies.pdf', type: 'HR (UNIVERSAL)' }
     ]
-  } else if (div === 'cs') {
+  } else if (div === 'finance') {
     return [
-      { name: 'SOP-CS-01_Penanganan_Komplain.pdf', type: 'CS' },
-      { name: 'SOP-CS-02_Standard_Eskalasi.pdf', type: 'CS' },
-      { name: 'SOP-HRD-2024_General.pdf', type: 'UNIVERSAL' }
+      { name: 'GitLab_Finance_Travel_Expense_Policy.pdf', type: 'FINANCE' },
+      { name: 'GitLab_Finance_Planning_Analysis.pdf', type: 'FINANCE' },
+      { name: 'GitLab_Finance_Procurement_Team.pdf', type: 'FINANCE' },
+      { name: 'GitLab_HR_People_Policies.pdf', type: 'HR (UNIVERSAL)' }
     ]
   } else {
     return [
-      { name: 'SOP-HRD-2024_Panduan_Karyawan.pdf', type: 'UNIVERSAL' },
-      { name: 'SOP-HSE-2024_Keselamatan_Kerja.pdf', type: 'UNIVERSAL' }
+      { name: 'GitLab_HR_People_Policies.pdf', type: 'HR' },
+      { name: 'GitLab_HR_Leave_of_Absence_Policies.pdf', type: 'HR' }
     ]
   }
 })
