@@ -121,8 +121,8 @@
                     <div class="text-[8px] text-[#cca37a] mt-1">{{ user.email }}</div>
                   </td>
                   <td class="p-3 uppercase">
-                    <span class="bg-[#2d5e35] text-white px-2 py-1 rounded text-[7px] font-bold tracking-widest">
-                      {{ user.divisi }}
+                    <span :class="getDivisiBadgeStyle(user.divisi)" class="px-2 py-1 rounded text-[7px] font-bold tracking-widest uppercase shadow-sm">
+                      {{ user.divisi || 'GENERAL' }}
                     </span>
                   </td>
                   <td class="p-3 uppercase">
@@ -132,6 +132,7 @@
                   </td>
                   <td class="p-3 text-right space-x-2 text-[8px] tracking-widest">
                     <button @click="editUser(user)" class="px-2 py-1 bg-[#f0a929]/10 border border-[#f0a929]/40 text-[#f0a929] hover:bg-[#f0a929] hover:text-[#1a140f] rounded-lg transition-all duration-150 active:scale-95 active:translate-y-0.5 font-bold">[EDIT]</button>
+                    <button @click="promptResetPassword(user)" class="px-2 py-1 bg-[#3b82f6]/10 border border-[#3b82f6]/40 text-[#60a5fa] hover:bg-[#3b82f6] hover:text-white rounded-lg transition-all duration-150 active:scale-95 active:translate-y-0.5 font-bold">[RESET PASS]</button>
                     <button @click="promptDeleteUser(user)" class="px-2 py-1 bg-[#e05320]/10 border border-[#e05320]/40 text-[#e05320] hover:bg-[#e05320] hover:text-white rounded-lg transition-all duration-150 active:scale-95 active:translate-y-0.5 font-bold">[DEL]</button>
                   </td>
                 </tr>
@@ -196,6 +197,53 @@
       </div>
     </Transition>
 
+    <!-- CUSTOM ANIMATED SOLARPUNK CONFIRM DIALOG FOR RESET PASSWORD -->
+    <Transition name="solarpunk-pop">
+      <div v-if="resetDialog.isOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+        <div class="w-full max-w-md bg-[#120d09] border-2 border-[#3b82f6] rounded-3xl p-6 shadow-[0_20px_60px_rgba(0,0,0,0.9)] relative text-left outline outline-1 outline-[#3b82f6]/30">
+          
+          <!-- Top Header -->
+          <div class="flex items-center gap-3 mb-4 pb-3 border-b border-[#3b82f6]/30">
+            <span class="w-3.5 h-3.5 rounded-full bg-[#3b82f6] shadow-[0_0_14px_#3b82f6] animate-pulse"></span>
+            <div>
+              <h3 class="text-sm font-display font-black text-[#60a5fa] uppercase tracking-[0.25em] drop-shadow-sm">
+                // SYS::RESET_PASSWORD
+              </h3>
+              <p class="text-[9px] text-[#d4b996] font-mono tracking-widest uppercase font-bold">RESET CREDENTIALS TO DEFAULT</p>
+            </div>
+          </div>
+
+          <!-- Message Body -->
+          <div class="bg-[#080503] border border-[#3b82f6]/30 rounded-2xl p-4 mb-6 font-mono">
+            <p class="text-[11px] text-[#fef3c7] leading-relaxed">
+              Apakah Anda yakin ingin me-reset kata sandi operator ini kembali ke default (orion123)?
+            </p>
+            <div class="mt-2.5 bg-[#1f130b] border border-[#3b82f6]/40 rounded-xl p-3 flex items-center gap-2">
+              <div>
+                <p class="text-[11px] font-bold text-[#60a5fa] leading-snug">
+                  {{ resetDialog.username }} (NIP: {{ resetDialog.nip }})
+                </p>
+                <p class="text-[9px] text-[#cca37a] mt-0.5">{{ resetDialog.email }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex justify-end gap-3 font-mono">
+            <button @click="resetDialog.isOpen = false" 
+              class="px-5 py-2.5 bg-[#26180f] hover:bg-[#382417] text-[#e5e7eb] text-[10px] font-bold tracking-wider rounded-xl border border-[#78350f] transition-all active:scale-95 shadow-md cursor-pointer">
+              [ CANCEL ]
+            </button>
+            <button @click="executeResetPassword" 
+              class="px-5 py-2.5 bg-gradient-to-r from-[#2563eb] to-[#3b82f6] hover:from-[#3b82f6] hover:to-[#60a5fa] text-white text-[10px] font-extrabold tracking-wider rounded-xl border border-[#93c5fd]/30 shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-all active:scale-95 cursor-pointer">
+              [ RESET PASSWORD ]
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </Transition>
+
     <!-- CUSTOM ANIMATED SOLARPUNK NOTIFICATION DIALOG -->
     <Transition name="solarpunk-pop">
       <div v-if="notifyDialog.isOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
@@ -227,7 +275,7 @@
           <!-- Action Button -->
           <div class="flex justify-end font-mono">
             <button @click="notifyDialog.isOpen = false" 
-              class="px-6 py-2.5 text-[10px] font-extrabold tracking-wider rounded-xl transition-all active:scale-95 border"
+              class="px-6 py-2.5 text-[10px] font-extrabold tracking-wider rounded-xl transition-all active:scale-95 border cursor-pointer"
               :class="notifyDialog.type === 'error' ? 'bg-gradient-to-r from-[#dc2626] to-[#ea580c] hover:from-[#ef4444] hover:to-[#f97316] text-white border-[#fca5a5]/30 shadow-[0_0_20px_rgba(220,38,38,0.4)]' : 'bg-gradient-to-r from-[#059669] to-[#0d9488] hover:from-[#10b981] hover:to-[#14b8a6] text-white border-[#a7f3d0]/30 shadow-[0_0_20px_rgba(16,185,129,0.4)]'">
               [ ACKNOWLEDGE ]
             </button>
@@ -251,7 +299,23 @@ const isLoading = ref(false)
 const message = ref('')
 const isError = ref(false)
 
+const getDivisiBadgeStyle = (divisi) => {
+  const d = (divisi || '').toLowerCase()
+  if (d === 'finance') return 'bg-[#d97706] text-white'
+  if (d === 'teknisi') return 'bg-[#059669] text-white'
+  if (d === 'hr') return 'bg-[#7c3aed] text-white'
+  return 'bg-[#2d5e35] text-white'
+}
+
 const confirmDialog = ref({
+  isOpen: false,
+  id: null,
+  username: '',
+  nip: '',
+  email: ''
+})
+
+const resetDialog = ref({
   isOpen: false,
   id: null,
   username: '',
@@ -274,7 +338,7 @@ const form = ref({
   username: '',
   email: '',
   no_hp: '',
-  divisi: 'general',
+  divisi: 'finance',
   role: 'user'
 })
 
@@ -361,7 +425,7 @@ const cancelEdit = () => {
   isEditing.value = false
   editId.value = null
   message.value = ''
-  form.value = { nip: '', username: '', email: '', no_hp: '', divisi: 'general', role: 'user' }
+  form.value = { nip: '', username: '', email: '', no_hp: '', divisi: 'finance', role: 'user' }
 }
 
 const promptDeleteUser = (user) => {
@@ -371,6 +435,51 @@ const promptDeleteUser = (user) => {
     username: user.username,
     nip: user.nip,
     email: user.email
+  }
+}
+
+const promptResetPassword = (user) => {
+  resetDialog.value = {
+    isOpen: true,
+    id: user.id,
+    username: user.username,
+    nip: user.nip,
+    email: user.email
+  }
+}
+
+const executeResetPassword = async () => {
+  const userId = resetDialog.value.id
+  resetDialog.value.isOpen = false
+
+  try {
+    const res = await fetch(`http://localhost:8084/api/users/${userId}/reset-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${getToken()}`
+      }
+    })
+    const data = await res.json()
+    if (res.ok) {
+      notifyDialog.value = {
+        isOpen: true,
+        message: data.message || `Kata sandi operator '${resetDialog.value.username}' berhasil di-reset ke default (orion123).`,
+        type: 'success'
+      }
+    } else {
+      notifyDialog.value = {
+        isOpen: true,
+        message: data.message || 'Gagal me-reset kata sandi operator.',
+        type: 'error'
+      }
+    }
+  } catch (err) {
+    notifyDialog.value = {
+      isOpen: true,
+      message: 'Gagal me-reset kata sandi operator. Terjadi kesalahan koneksi.',
+      type: 'error'
+    }
   }
 }
 

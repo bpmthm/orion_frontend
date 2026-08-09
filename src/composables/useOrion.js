@@ -59,6 +59,9 @@ export function useOrion() {
       setTimeout(() => {
         triggerDashboardIntro()
       }, 100)
+      // Auto-fetch history & escalations saat restore session
+      fetchChatHistory()
+      fetchEscalations()
     } else {
       setTimeout(() => {
         triggerLoginIntro()
@@ -129,6 +132,9 @@ export function useOrion() {
             setTimeout(() => {
               triggerDashboardIntro()
             }, 100)
+            // Auto-fetch history & escalations setelah login
+            fetchChatHistory()
+            fetchEscalations()
           }
         })
         tl.to('.shutter-top', { y: '0%', duration: 0.5, ease: 'power4.inOut' })
@@ -218,6 +224,8 @@ export function useOrion() {
       isTyping.value = false
       await nextTick()
       scrollChat()
+      // Auto-refresh chat history di sidebar setelah pesan terkirim
+      fetchChatHistory()
     }
   }
 
@@ -247,10 +255,21 @@ export function useOrion() {
   }
 
   const uploadFile = async (file) => {
-  uploadStatus.value = 'TRANSMITTING...'
-  const formData = new FormData()
-  formData.append('file', file)
-  formData.append('divisi', targetDivisi.value)
+    uploadStatus.value = 'TRANSMITTING...'
+    const fnLower = file.name.toLowerCase()
+    if (fnLower.includes('(finance)') || fnLower.includes('finance')) {
+      targetDivisi.value = 'finance'
+    } else if (fnLower.includes('(hr)') || fnLower.includes('hrd') || fnLower.includes('hr')) {
+      targetDivisi.value = 'hr'
+    } else if (fnLower.includes('(teknisi)') || fnLower.includes('teknisi')) {
+      targetDivisi.value = 'teknisi'
+    } else if (fnLower.includes('(cs)')) {
+      targetDivisi.value = 'cs'
+    }
+
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('divisi', targetDivisi.value)
 
   try {
     const token = localStorage.getItem('orion_token')

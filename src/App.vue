@@ -8,6 +8,7 @@ import UserManagementModal from './components/UserManagementModal.vue'
 import DocumentManagementModal from './components/DocumentManagementModal.vue'
 import UserWorkspaceLayout from './components/UserWorkspaceLayout.vue'
 import AnalyticsDashboardModal from './components/AnalyticsDashboardModal.vue'
+import UserProfileModal from './components/UserProfileModal.vue'
 
 const {
   isLoggedIn, email, password, authError, authLoading, currentUser,
@@ -36,6 +37,7 @@ const handleInjectHrMessage = (esc) => {
 const showUserManagement = ref(false)
 const showDocModal = ref(false)
 const showAnalyticsModal = ref(false)
+const showProfileModal = ref(false)
 const analyticsSummary = ref(null)
 const escalationsList = ref([])
 
@@ -106,6 +108,11 @@ const runGenerateSummary = async () => {
   } finally {
     isGeneratingSummary.value = false
   }
+}
+
+const selectQuickSummaryTopic = (topicText) => {
+  summaryTopic.value = topicText
+  runGenerateSummary()
 }
 
 const handleBackgroundParallax = (e) => {
@@ -382,6 +389,7 @@ onUnmounted(() => { destroySystem() })
         @load-history="(q) => inputMessage = q"
         @open-summary="handleOpenSummary"
         @inject-hr-message="handleInjectHrMessage"
+        @open-profile="showProfileModal = true"
       />
     </div>
 
@@ -467,7 +475,13 @@ onUnmounted(() => { destroySystem() })
           <p class="text-[7px] text-[#cca37a] tracking-[0.3em] uppercase font-display font-black mb-1">ACTIVE OPERATOR</p>
           <p class="text-[9px] text-[#f4ede2] font-mono truncate">{{ currentUser.username || currentUser.email }} ({{ currentUser.role.toUpperCase() }})</p>
           
-          <div v-if="currentUser.role === 'admin'" class="space-y-1.5 mt-2">
+          <button 
+            @click="showProfileModal = true"
+            class="w-full py-2 bg-[#8d6b48]/20 border border-[#8d6b48]/40 text-[#f4ede2] hover:bg-[#8d6b48] hover:text-[#1a140f] text-[8px] tracking-[0.2em] uppercase font-mono transition-colors font-bold mt-2 cursor-pointer">
+            [ SYS_PROFILE & SETTINGS ]
+          </button>
+
+          <div v-if="currentUser.role === 'admin'" class="space-y-1.5 mt-1.5">
             <button 
               @click="showUserManagement = true"
               class="w-full py-2 bg-[#f0a929]/10 border border-[#f0a929]/30 text-[#f0a929] hover:bg-[#f0a929] hover:text-[#1a140f] text-[8px] tracking-[0.2em] uppercase font-mono transition-colors">
@@ -476,7 +490,7 @@ onUnmounted(() => { destroySystem() })
             <button 
               @click="handleOpenAnalytics"
               class="w-full py-2 bg-[#10b981]/10 border border-[#10b981]/40 text-[#10b981] hover:bg-[#10b981] hover:text-[#1a140f] text-[8px] tracking-[0.2em] uppercase font-mono transition-colors font-bold">
-              [ 📊 ANALYTICS & ESCALATION DESK ]
+              [ ANALYTICS & ESCALATION DESK ]
             </button>
           </div>
         </div>
@@ -707,7 +721,7 @@ onUnmounted(() => { destroySystem() })
           <select v-model="targetDivisi" class="w-full bg-[#080605] border border-[#4d3725] px-3 py-2 rounded text-[10px] text-[#f0a929] focus:outline-none focus:border-[#f0a929] font-mono appearance-none uppercase">
             <option value="universal">UNIVERSAL (SEMUA)</option>
             <option value="teknisi">TEKNISI LAPANGAN</option>
-            <option value="cs">CUSTOMER SERVICE</option>
+            <option value="finance">FINANCE & KEUANGAN</option>
             <option value="hr">HR & MANAGEMENT</option>
           </select>
         </div>
@@ -817,29 +831,72 @@ onUnmounted(() => { destroySystem() })
       />
     </Transition>
 
+    <Transition name="solarpunk-pop">
+      <UserProfileModal 
+        v-if="showProfileModal" 
+        :user="currentUser" 
+        @close="showProfileModal = false" 
+      />
+    </Transition>
+
     <!-- Executive Summary Drawer Modal -->
     <Transition name="solarpunk-pop">
-      <div v-if="showSummaryModal" class="fixed inset-0 z-50 flex items-center justify-center bg-[#0c0c0a]/85 backdrop-blur-md p-6">
-        <div class="solarpunk-chassis w-full max-w-3xl rounded-3xl p-6 relative border-2 border-[#8d6b48]/60 shadow-2xl flex flex-col font-mono">
-          <button @click="showSummaryModal = false" class="absolute top-4 right-4 text-[#e05320] font-bold text-xs">
+      <div v-if="showSummaryModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-6">
+        <div class="w-full max-w-3xl bg-[#120d09] border-2 border-[#f0a929]/70 rounded-3xl p-6 relative shadow-2xl flex flex-col font-mono text-left">
+          
+          <button @click="showSummaryModal = false" class="absolute top-5 right-5 px-3 py-1 bg-[#24170f] border border-[#e05320]/50 text-[#e05320] hover:bg-[#e05320] hover:text-white rounded-xl font-bold text-[10px] tracking-widest transition-all">
             [ X CLOSE ]
           </button>
           
-          <div class="mb-4 pb-2 border-b border-[#4a3424]">
-            <h3 class="text-lg font-display font-black text-[#1a140f] uppercase">📊 AI EXECUTIVE SUMMARY GENERATOR</h3>
-            <p class="text-[8px] text-[#4a3424] uppercase">Ringkasan Eksekutif Terstruktur dari Dokumen Perusahaan</p>
+          <div class="mb-5 pb-3 border-b border-[#4a3424]">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#f0a929] shadow-[0_0_10px_#f0a929]"></span>
+              <h3 class="text-sm font-display font-black text-[#f0a929] uppercase tracking-widest">
+                AI EXECUTIVE SUMMARY GENERATOR // STRATEGIC ANALYSIS ENGINE
+              </h3>
+            </div>
+            <p class="text-[9px] text-[#cca37a] uppercase tracking-wider mt-1">
+              Ringkasan Eksekutif Terstruktur & Regulasi Berdasarkan Dokumen Perusahaan
+            </p>
           </div>
 
+          <!-- Quick Topic Selector Tags -->
+          <div class="mb-3">
+            <p class="text-[8px] text-[#cca37a] font-bold tracking-widest uppercase mb-1.5">// REKOMENDASI TOPIK CEPAT:</p>
+            <div class="flex flex-wrap gap-2">
+              <button @click="selectQuickSummaryTopic('Kebijakan Travel & Expense')" class="px-3 py-1 bg-[#1a120c] border border-[#f0a929]/40 hover:border-[#f0a929] text-[#f0a929] rounded-lg text-[9px] font-bold transition-all">
+                [ Kebijakan Travel & Expense ]
+              </button>
+              <button @click="selectQuickSummaryTopic('Prosedur Cuti & Absensi')" class="px-3 py-1 bg-[#1a120c] border border-[#f0a929]/40 hover:border-[#f0a929] text-[#f0a929] rounded-lg text-[9px] font-bold transition-all">
+                [ Prosedur Cuti & Absensi ]
+              </button>
+              <button @click="selectQuickSummaryTopic('Keamanan IT & Server')" class="px-3 py-1 bg-[#1a120c] border border-[#f0a929]/40 hover:border-[#f0a929] text-[#f0a929] rounded-lg text-[9px] font-bold transition-all">
+                [ Keamanan IT & Server ]
+              </button>
+              <button @click="selectQuickSummaryTopic('Pengadaan & Anggaran')" class="px-3 py-1 bg-[#1a120c] border border-[#f0a929]/40 hover:border-[#f0a929] text-[#f0a929] rounded-lg text-[9px] font-bold transition-all">
+                [ Pengadaan & Anggaran ]
+              </button>
+            </div>
+          </div>
+
+          <!-- Input Bar -->
           <div class="flex gap-2 mb-4">
             <input v-model="summaryTopic" type="text" placeholder="Fokus Topik (contoh: Prosedur Cuti & Absensi)..."
-              class="flex-1 bg-[#080605] border border-[#4d3725] p-2.5 rounded-xl text-xs text-[#f4ede2] outline-none" />
+              class="flex-1 bg-[#080503] border-2 border-[#4a3424] focus:border-[#f0a929] p-3 rounded-xl text-xs text-[#f4ede2] outline-none tracking-wide" />
             <button @click="runGenerateSummary" :disabled="isGeneratingSummary"
-              class="px-5 py-2.5 bg-[#f0a929] hover:bg-[#e05320] text-[#140e0a] font-bold text-[9px] uppercase rounded-xl transition-all">
-              {{ isGeneratingSummary ? 'GENERATING...' : 'GENERATE' }}
+              class="px-6 py-3 bg-gradient-to-r from-[#f0a929] to-[#e05320] hover:brightness-110 text-[#120d09] font-display font-black text-[10px] tracking-widest uppercase rounded-xl transition-all shadow-[0_0_15px_rgba(240,169,41,0.3)] active:scale-95">
+              {{ isGeneratingSummary ? 'PROCESSING...' : 'GENERATE' }}
             </button>
           </div>
 
-          <div class="bg-[#130f0c] border border-[#4a3424] p-4 rounded-xl text-[10px] text-[#f4ede2] leading-relaxed max-h-96 overflow-y-auto whitespace-pre-wrap">
+          <!-- Telemetry Status Bar -->
+          <div v-if="isGeneratingSummary" class="mb-3 bg-[#1a120c] border border-[#f0a929]/40 p-2.5 rounded-xl text-[9px] text-[#f0a929] font-mono animate-pulse flex items-center justify-between">
+            <span>[ SYSTEM TELEMETRY: RETRIEVING EMBEDDING CHUNKS & SYNTHESIZING SUMMARY ]</span>
+            <span>PROCESSING...</span>
+          </div>
+
+          <!-- Summary Output Display -->
+          <div class="bg-[#080503] border-2 border-[#4a3424] p-5 rounded-2xl text-[11px] text-[#f4ede2] leading-relaxed max-h-96 overflow-y-auto whitespace-pre-wrap font-mono shadow-inner border-l-4 border-l-[#f0a929]">
             {{ executiveSummaryText }}
           </div>
         </div>
